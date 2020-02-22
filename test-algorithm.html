@@ -1,6 +1,7 @@
 <script>
 
 
+
 class Result {
     key;
     startIndex = new Array();
@@ -172,7 +173,7 @@ function makeFailRelations(node) {
 
                         selectedNode.failNodeId = nodeContainer[0].id;
 
-                        for (let i = 0; i < selectedNode.children; i++) {
+                        for (let i = 0; i < selectedNode.children.length; i++) {
                             queue.push(selectedNode.children[i]);
                         }
                     }
@@ -211,7 +212,6 @@ function generateStartNodeChildren(startNode, dictionary) {
             nodeContainer[child.id] = child;
             checkList[charCode] = true;
         }
-
     }
 }
 
@@ -234,7 +234,11 @@ function fileSearch(patterns, context) {
         let indexedChar = context[cursorIndex];
 
         while (true) {
+
             for (let i = 0; i < cursorNode.children.length; i++) {
+
+                if (indexedChar === undefined)
+                    break;
 
                 if (cursorNode.children[i].char === indexedChar || cursorNode.children[i].char === indexedChar.toLowerCase()) {
 
@@ -253,6 +257,12 @@ function fileSearch(patterns, context) {
                         break;
 
                     }
+                    // When cursor node's i children has no outputs, change the cursour node and move the cursor index to
+                    // The nex char
+                    cursorNode = cursorNode.children[i];
+                    cursorIndex += 1;
+                    indexedChar = context[cursorIndex];
+                    i = -1;
                 }
             }
 
@@ -267,21 +277,40 @@ function fileSearch(patterns, context) {
                 if (cursorNode == null || cursorNode === undefined) {
 
                     cursorNode = nodeContainer[0];
-                    cursorIndex+=1;
+                    cursorIndex += 1;
                     break;
                 }
             }
         }
     }
+
+    nodeGeneratedId = 0;
+    nodeContainer = new Array();
+    tree = null;
+
     let visualResponse = JSON.stringify(results);
-    document.write(visualResponse);
+    return visualResponse;
 }
 
-function test(){
-	let dc = ["a","b","ab","aab"];
-	fileSearch(dc,"abxcaabxbbbaaxa");
+function test(input){	
+	
+let dec = input.split(" ");
+var file="monnahashemi1.fiiiisimaadimohammadi100016.rezashahrokhii100040.saberfathollahi100057.alirezadashtbayaz100065.asdasdasdsasdasdharifi0000100123.mohammadivafaeirad100131.mohammadabdiyan100149.100180.mahsaaarahnama100222.nayererazavi hashemi10023.saedehjafaryazdi100495.mostafakhaksari100768.mojtabaegbal100800.esmaiiiljhjh100834.marya100842.aaaaaaaa100883.emraanhoseinzadeh100891.100941.taghisalmani ha101212.sanazhoshi101253.33332.akbarali panah101485.mohammad javadsedaghat101501.ali mohammadzahmatkesh3495579.royatavassoli2253.imanaminipour101568.101576.mahmoudpourfarzad101584.101600.101667.somayehesari nejad1011014.101766.navidahangari kave101774.cobrasoliemani101881.saeidpourali101899.101907.sayed rezajafaraiyan5511019.102004.nazaninbahmanpour102038.102046.farhadfarhadi kia102053.kazemlashgari102061.fatemehsaedei chameneh21409529.mah laghapahlavan14142.102145.maryamsharif102152.rogayesoltanpor102186.arefghorbani102202.abdolrasooliegdari102210.shahinvaziri102301.afshinasmal vandrakhshai102392.5009.abedinhosseini6969695.kazemgholabi102616.rahmanzandevakili102657.102699.mortezaheydarinejad102715.bahadornouruzy102756.mirjamalseyedi esfahlani102764.aliezatiyan102772.parvizjamshidi102806.mohsentork abadi100081.majidaghavali100412.1000009.mahdikhosravian100453.farshedzahedee100560.hosseinhasan zadeh100578.mortezaraisifard100586.maryam100644.maryamghalazadeh100651.negaralli akbari100669.rozhinkhosravi100693.100701.100735.mahdiyosefi100750.fatemevahed dehkordi100784.monasalmani100859.mahiakordli100909.100933.ee100974.farzadghorbani100982.mahbobehshafei101022.jalilhatef101048.amirnavvabian tehrany101071.saeedtosi101097.aminpishdad101261.hadiabbasi125.101329.saied hamid rezatabatabaie1263.101345.101360.javadranjbar101394.mohammad rezaheidari zare101493.mohammadheydari101519.mohamadshahabi moghadam101527.kumarsmoazami101550.majidranjbar chaleshtori101626.davoodshamsaei101659.somayehshafaei10000008.royashah aghaee1572700.hamedfeizabadi101816.101865.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa101923.faribasargazi101931.maryamaghai101956.840355.golamrezasoltanpor102178.royasoltanpor102194.102228.nazar alimortezaei ghahrudi102277.yoosefjanghoori828.gggaa102327.shahabsolaymani102426.mohamad tagitanhayi ahari102418.babkbahmani75.eyvaz aliaghasakhlu102491.102533.hosseinparapi5530605.hosseinmohamad poorzarandi100073.hojatollahmolasalehi100099.seyed eissaahmadi100107.hirbodmasoomi100115.mohammadgholizadeh100156.ygitg100164.ali ashrafhajiyan100172.majidheshmati100214.mehribargneieis100552.100545.mortezahalvaei100719.100727.100743.mehdisedigollahi100792.bahramshalikar marzangoo101006.mortezabarati101014.101030.101139.hamidkharestani101238.101352.alimoghadam101287.vahidhadi1010107.elmiranavard101618.101642.rahmat abady101675.mehdiebadi fard101683.manouchehrmoadab manesh101709.omidebadi101725.mohammadmohammad nejad101741.101840.mohammadashrafi102012.102020.mahditooshin par102103.1001015.102137.shapourheidari102236.jaberali zadeh heshmat abad102244.102251.said nezam adinhoseini102293.mahmoodmohamadi1366665.mohammad rezaebrahimi102350.102368.mehdiali madadi102376.behnazgholami102384.sirwanzandi102400.hamidrezamovasagh102459.102442.malekimasumeh102517.saharshojaee410472.aaaaaaaaaaaa102582.saberaalaei102608.102624.somayehbahrami mofid102640.hamidasgharh1572718.akbardadkhahe102673.rezarezaei102681.mehdipakize102707.saeedghanjeh loo102723.valiyoosefi102749.emzadarcity bank26.somayebideh100024.allirezakhatibi100032.100248.mortezatavakoli100255.hassankhosravi100420.amiriman einy100511.mahmodhalagarani100529.saraghahramani chabok100537.saeidvasheghani farahani100610.amirebrahimi100628.shahramsafari saghavaz100677.sanaz sadatabrar100685.haditafazoli100776.hamedabbasi10009.100917.abbasali100925.hamedshahbaz nema100958.farhadhatami100966.mahmoodpoormoghim100990.aaaa101063.101105.hosenshahbaznea101220.rahimeslahi101246.mahvashbatmanghlichifard101279.amirmazhari101295.soleimanaghaeikhoramabadi101303.seyed abbasrahimi khatibani101386.salehkarimzadeh101402.yaghoobsevdmi20206.ahmadheshami101477.habibgholami101469.fff101592.abdol hossinseraji101634.mohammadhomaie101717.hamedkarimlo101782.101790.101824.mohammadkhoshvaght7302.faridameri101857.101873.mohsenhashemi nejad101915.shervinvaziri102095.marziyehsaidi nasab102111.mehdijafari102160.sedeighehhaji shafie3333333.farzanehkhalkhali102525.mohammad hosinesoltani102541.102665.alirezanavidi moshir abad102780.aa102798.esmailabdollahi102814.zahrakhazaee102822.ebrahimghasempor102848.102855.danialsoleymani102830.mohammad hoseinkhani ali abad102863.alirezamaddahiravesh102871.samadalvandandrian102889.wwwwwwwwwddddddd102921.103192.103234.salmanamiri alieh kelaie103259.103283.103366.103382.heshmatmedizadeh103820.maryamgolipoor103846.103861.mohammadrashidi103978.shafiasgar103994.hamedmohammadi104299.alirezakalantari104331.monireyadaee bahador104711.aidinbabaei104802.mahmoudbayat104828.masuodvafa104943.majidnoori104950.104976.amamoyrdiabdpor fard105023.aliheyrani105106.ahmadbakhshzadeh105437.heydarmokhatarian105445.ghorbanailshakib afshord105551.alahverdiali zade105577.hassanpiri105783.majidajorloo105999.hoseinshah panah106229.abolfazlshahbazi106310.atababa106393.davoodhashemi barzabadi106724.106732.aaaaaaaaaaaaaaa106740.aaaaaaaaaaaa106773.aaaaaaaaaaaaaaa106781.seyedrezanoorestani106799.106815.hamidrezaaali106823.akbarrasooli106831.alirezarabiee106849.hasanaraghi106864.mohammadkhan abadi106880.mohsenhoseynjani106906.seyed aliakbaratifeh106914.alirezajahanshah lo107011.aboalfazleaeedi mehr abadi107003.elahehgodaki107060.khalilghafari107086.hamidteymoori107094.107458.hamdalahframarzi107417.rooholahranjkesh107508.mohamadfaraji107557.mohammadhoseini113738.107623.alifardin por107698.faezeamini107722.ali asgharghasemian107748.abolfazlfarah vashi107763.esmailmeskaranian102954.fatemehhadad103184.hosseinghahghahaie nezam abadi103507.kiumarskazemi103580.sadeghalam zade2220.abolfazlhoseinkhanloo103911.104398.mortezaramazani104810.meysamkhani104844.arastoonoorozkhany106252.manochehrpor mohammad negad gabie106286.abbashallaji106336.aliiamini106377.miladtayebi zad106401.mn106609.aaaaaaaaaaaa106617.sawdsdfqdf106666.mohammadrezalandarani106674.106708.106757.ahmadghamgin106807.mohamad rezaasgrey torkany106716.106922.107201.seifaliboote chayi107391.107441.107524.mohamad rezarekuta107813.mahmoodzarin bakht107854.davoodakbari107862.mehdikhodarahmi107870.107888.107896.107904.gholamaliashnagar107912.gholamhoseintalebi gharakani107938.hasan alikeshavarz107953.mohammadeshghali farahani107961.alieskandary107979.107995.alirezaghasem peyvandi107987.karimheidarzadeh108001.fahimedanai nazar108019.108027.shogaaldinazimzadeh108035.saeednaseri108043.marjansheibani doloee108050.seyed hosseinbani fatemi108068.108076.108118.asadolaharab108142.108159.abolfazlasnaashari108167.mojtabaadinezamenjani108183.mojtabarazipoor108191.mojtabarezaee108209.108217.108225.abolfazlcheragh roshan108233.rezaebrahim zade108241.108266.kobranazme108282.shahramhasanpoorabrighi108290.102939.vahidzarandi103176.103333.azarghanati103416.103804.gholamrezaamini103838.mohhamadgolipoor103879.104125.mohammadnavaei sh104166.afshinbolhasani104232.seyed masudmehdiani104430.seyed fakhreddinmir davoodi104448.zabiolahmirzaei104455.mohammadkamal abadi farahani104885.104919.105007.akbarkhalili105031.davodvahid105049.mohamadnajafi leylab105056.alinajafi105114.karimhaghighi105122.mojtababadri boghmej105130.ahmadhosien zadeh105155.kazemmohammadi komanj alia105171.105379.akbarreza mandi105452.rezarafatpanah105684.hamzeamir flahi4358.sinaghrbani105742.mortezafarzane105759.alishahedi105882.elhampartovi105916.alishafiee106054.106146.roghiyeparsa amrolah106153.106161.106195.106302.106351.106443.106450.masomegetmiri106468.106963.amiraliyonesian7699093.fatemehboniadi107235.mahdighabol107433.ali rezaheydari107466.amirtorkashvand107516.mazearyousefi107540.107573.gholamhoseynyazdi107599.rasoltan tajik107649.monirehkhosravi107706.gholamrezahasanidiba107714.tabarakfalah107797.hoseyndehghani107805.108092.rezaamni shire jini108100.108126.108134.asefazhm zadeh108258.aliebadpourzang abad108274.108308.kadegabick108316.leilaseri108324.mobinaniyazkhani102988.oroujpour saleh102996.elaheghorbani103002.melinaniyazkhani103010.omidnemati103044.mohammadbagheromidi103051.mansourehesfaneiari103069.maryamghadiri103085.javaddelpasand103127.103135.javadmanavi103150.saeednaghibyan103143.mostfarastgo103317.mehdibagheri4671.103465.103523.103531.103572.mohsentavakoli103663.103689.103713.saeidsayah por103812.103887.103952.ghasemtajary20008.leilakashi pazzaded104018.104042.alikarimi pour104067.azamlatifi104083.104117.rezakhosravikia104109.afsanehsabory104133.mohamadkhanian104174.mm104349.104356.maghsoudghasempour104661.saberpashaei saei104687.maryamemami razlighi104778.majidiranzad104901.babakrahmani105189.samadzareai105213.habibnorizade105262.naserazizi moshir abad105338.rasoolzarean baje baj105353.kazemghahraman por105429.akbardehghani105502.mohammadrezaghahremanipor markid2000008.shivafatehinobarian105528.yousefrezaei105544.aliasgharzare105569.samiradamshenas105585.mhamadpalangi105668.106948.ali asgharsalehi107177.mortezakhalil arjmandi107193.mehdivahedi107219.rahimjafari107276.bahmanaminy107284.hoseinkalkhorani107342.vajiholabadakhshan107680.107821.majidyousefi102970.habbanh103119.103226.mahditabasi103242.103309.mahmoodnoori103606.103614.103747.majidbagheri103770.103788.aliakbari104034.mehdihashemi104141.ferigerdrazmazma104265.ali moradmansori104364.gholamabbasmoazzen104380.hasanmoosavi104406.shimabaka104505.magidnoroozi105072.minanori gharah tapah105163.aliasad105197.hoseinbayat105221.105270.ebrahimnaghipoor105296.mohamadasadi105312.mohammadghafari105320.eslamabaspor fard105361.valeekhodaei105395.105403.gholamrezanojavan105411.abbasghorban zadeh105460.seyed hamidsajadi105494.105593.mohammadkamran monavar105627.mohammadnazari105635.alibehrozzadeh105676.alicheragh roshan105700.bentolhodagholami105791.ataolahposhtjany105841.sied mostafamirkarimi105940.105957.zahrazahra105932.abdolghanikhosh sima106013.jafarabotalebi saee106096.106641.bgvgbhbnhfgtgvfdx106658.mehdijerinokhandan106682.saeedhatami106955.anvarabdi106971.bahrambachol106997.salmaneskandari107029.borjaliahmadiyan107037.hoseinasad nezhad107045.alirezashademan107052.seyed mortezajamali107078.kamalakbarzade107102.aliabdolkarimi106989.bahmankhaleghi hojghan107110.abolfazlahmadpoor107144.ahmadtabatabaai107383.eslameskandari107425.masomehtaherian107490.irajyazdani107656.107672.hematfadakar eskandar abad102897.farzanehnaseri102905.majidfallah103028.103077.mahdighaffari103101.khalilkashani103515.ali rezakarimi103556.abolfathmoazzemi fard103598.mahmoodghorbani103622.103648.ghazaljafari103655.103721.mohsenmoghadasi sanjabi103739.mostafasaedi103754.abotalebmanafi103762.moeinmiri103853.nasrinraeisi nafchi103929.rezaanarchi103986.dd104208.mahbobehavaseli104463.seyed rezahashemi moghadam104489.somayesoltani104497.104513.hosseinshah ali104794.mehdiasghari104836.fatemehmajid zadeh104851.maryamfaryam mansh104968.yasersabri104984.vahidnajafi105015.saeidkhodayari105080.moienabotalebi105148.mahdiabasi semnani105239.somayehbajlani105775.mohamadalihasanpoor105817.105833.105874.mohamadrezahamzeian105809.105908.abolfazlsadegh zadeh105981.ashrafmirzaee106070.hasanfarsh foroosh imani106088.omidalishamsi zamenjani106120.imanbagheri106187.leilaniee khaljan106237.gholamrezasalehi106385.darioushbafandeh106419.esmaeelsalehi mrzeejrani106427.mohammad rezabaghbanbashi jabari106435.106476.106492.bahramsafari106484.rezataheri motlagh106518.shahroozhanifi106567.rahimtalaei106765.ataolahsohrabi106930.rezaghouravan106898.rezarahpeimaye arasi107169.107185.mahboobeharab107227.107243.fatemehsangchi107250.mohamadberenjkooban107268.mahmoodostadi moghadam107292.mohammadmoniri102913.103200.majidrahime103218.elahea103267.103275.saeeideborhaninezhad raini103291.mohammadshafikhani103325.alialipur103374.amirafraz asfandarani103358.23377476.103408.58131954.103432.amirfarhadkhani103440.sohrabamini103457.davoodghorbani senei103481.hamid rezanaghavi103499.davoodaghazadeh103549.aliakbarshadab103671.homayoonberjis103705.roholahmoradi103564.pooyagolipoor104059.omidliry104091.mostafaramezanipoor104158.104240.miladnazari104315.104323.gholamabbasmighani104471.rezanajafi104562.104588.aminvahdani104638.jalelabedenei104620.hojatolahnemati104653.ashaghvahdani104679.najafgholami negarestan104703.yaghoobsoltani104729.firoozranjbar104737.solmazshafaati104745.khalilsafei104752.hasaneyvazi ghrabaghloo104760.rasoolaghakishi zadeh104786.aliasgharvanaeii104869.mohamadanjoman roz105064.hosenasanlo105205.105254.105247.105288.amirabedini105304.105346.ensyehabdoljabary105478.105718.ahmadbadnorooz105726.rezvansalighe105825.105767.105866.alirezazadeh106138.mohamadsamiai fard106179.ekhtiyarhasannezhad chand106294.ahmadmohamadi106344.hamzehmalek pour106575.akbartavakkoli106591.mehdiranjori107300.107318.107359.ensiehdibaei khoo107367.mahdiehshaker107565.marziebarakchi102947.khosrosediqi102962.alikiaeypoor103036.asmaeildavarpanahdezaj103093.maryammohammadi103168.gholamalighanaei103473.mohammad aligholi pour104075.104182.amirkeivanbod104216.mehdiebrahimi104372.akbarheydari ashteyani104414.104422.104521.jafarsamadi104539.ahmadmiladi104547.alahvirdishahabisar104554.naserbadaghi hazejan104570.siroosmirzaei104596.samadzarei104604.abolfazlshokrzade104612.104877.mahdifarjvand104893.farshidsadeghy104927.mohammad hoseinbabarahim104935.mehrdadrozbhani104992.abdolahmomen nasab105098.maseoodsalimi105536.hassanpartovi morad105619.zahrabnasrolahi heravi105601.76931112.aliasgharramezani105650.rezamashmool105692.javad mohamadmir ghavami105924.105965.hossainsadeghifar105973.106005.106021.hossinesamalek106039.arianhasani lakmeh sari106047.rezakhazaei106062.akbarnajafi106104.ahmadjeboee106211.mahmoodcharkhian106260.hoseinsabet ghadam106500.mohamad alirastgoo106526.106534.106542.seyed javadbaghery106625.fdhzdfhsfgsdfg106633.gholamrezaabdoli106690.gholamaliheidari107128.delavrsafari107136.emadiemadi107326.keykavoosabasi107474.107482.107581.mohamad aliyazdani ardestani107615.mohammadhaghani107664.alijahanyari107730.yosofrabani107755.abolfazljavadi107771.mohammadyousefi haghgo107789.107839.108365.108381.mohamad alimahmoodi esfandarany108407.mahmoodsar khosh108431.108480.eisakazzazi108498.hojatfaraji108514.kamalmirbarati108597.hasansheykhi108639.farzadmashhorei nazari108670.ghanbarvazifeh108712.mosamahdavi hosein abad108795.alirezakaremei108704.jamshidbagheri zagloojeh108803.naderahmadian108811.mohamadtaghiadlnia108829.alimosapoor108886.javadtalebzadeh108902.hasanzamani108928.yousefhami golzar108936.almasezati108951.hoseynhasanzad108993.109009.aboalfazlmoolapour gajan109025.behzadheydari zare2964.hossenkhosh goftar movafagh109090.hojatolahesmaeili109108.alifarmahini109132.amir rezakordiyan asl109140.ali mohamadsamadi1099993.mohamadteymoori109181.mohamadkhalil noroozi109199.hosseinghaemi109249.ahmadkarbalaei109264.shokrollahmahdavi109256.mahmoodtaheri109348.asmamohammadi122622.hamedrezabayat109371.109439.behnamgolmohamadi109512.hoseinghasemi109561.109728.pymanmoharrami gajgah109736.hasanmohamady109744.110148.110171.eghbalmasoomi mehr110411.110486.hamidrezaemadani110502.ghazfoorranjbry myardan110569.mihamad rezazebardast yosef abad110635.salamreza pour110643.110650.saeidkurang110726.ayobrezaee110767.111161.alirezaastane111187.hashemsalehi111435.saeidezareaie111583.";
+
+
+let result = fileSearch(dec,file);
+let element = document.getElementById("showDiv");
+element.innerText = "";
+element.innerText = result;
+result="";
 }
 
 </script>
 
-<button onclick="test()"> AHO_C</button>
+<input type="text" oninput="test(this.value)">
+
+<hr>
+
+<div id="showDiv" style="width:100% min-height:100px">
+
+</div>

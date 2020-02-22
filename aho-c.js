@@ -170,7 +170,7 @@ function makeFailRelations(node) {
 
                         selectedNode.failNodeId = nodeContainer[0].id;
 
-                        for (let i = 0; i < selectedNode.children; i++) {
+                        for (let i = 0; i < selectedNode.children.length; i++) {
                             queue.push(selectedNode.children[i]);
                         }
                     }
@@ -209,7 +209,6 @@ function generateStartNodeChildren(startNode, dictionary) {
             nodeContainer[child.id] = child;
             checkList[charCode] = true;
         }
-
     }
 }
 
@@ -232,7 +231,11 @@ function fileSearch(patterns, context) {
         let indexedChar = context[cursorIndex];
 
         while (true) {
+
             for (let i = 0; i < cursorNode.children.length; i++) {
+
+                if (indexedChar === undefined)
+                    break;
 
                 if (cursorNode.children[i].char === indexedChar || cursorNode.children[i].char === indexedChar.toLowerCase()) {
 
@@ -251,6 +254,12 @@ function fileSearch(patterns, context) {
                         break;
 
                     }
+                    // When cursor node's i children has no outputs, change the cursour node and move the cursor index to
+                    // The nex char
+                    cursorNode = cursorNode.children[i];
+                    cursorIndex += 1;
+                    indexedChar = context[cursorIndex];
+                    i = -1;
                 }
             }
 
@@ -265,12 +274,17 @@ function fileSearch(patterns, context) {
                 if (cursorNode == null || cursorNode === undefined) {
 
                     cursorNode = nodeContainer[0];
-                    cursorIndex+=1;
+                    cursorIndex += 1;
                     break;
                 }
             }
         }
     }
+
+    nodeGeneratedId = 0;
+    nodeContainer = new Array();
+    tree = null;
+
     let visualResponse = JSON.stringify(results);
-    document.write(visualResponse);
+    return visualResponse;
 }
