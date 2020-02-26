@@ -1,17 +1,14 @@
 
 class Result {
-    key;
-    startIndex = new Array();
+
+    constructor() {
+        this.key="";
+        this.startIndex = new Array();
+    }
+
 }
 
 class Node {
-    id;
-    char;
-    outpts;
-    parentNodeId;
-    failNodeId;
-    children;
-    path;
 
     constructor(id, char, outputs, parentNodeId, failNodeId, children) {
         this.id = id;
@@ -243,10 +240,23 @@ function fileSearch(patterns, context) {
 
                         for (let j = 0; j < cursorNode.children[i].outpts.length; j++) {
 
-                            let result = new Result();
-                            result.key = cursorNode.children[i].outpts[j]
-                            result.startIndex.push(cursorIndex - cursorNode.children[i].outpts[j].length + 1);
-                            results.push(result);
+                            let needsNewNode = true;
+
+                            for(let z = 0 ; z<results.length;z++){
+                                if(results[z].key === cursorNode.children[i].outpts[j]){
+
+                                    results[z].startIndex.push(cursorIndex - cursorNode.children[i].outpts[j].length+1);
+                                    needsNewNode = false;
+                                    break;
+                                }
+                            }
+
+                            if(needsNewNode===true){
+                             let result = new Result();
+                             result.key = cursorNode.children[i].outpts[j]
+                             result.startIndex.push(cursorIndex - cursorNode.children[i].outpts[j].length + 1);
+                             results.push(result);
+                            }
 
                         }
                         cursorNode = nodeContainer[cursorNode.children[i].id];
@@ -285,6 +295,8 @@ function fileSearch(patterns, context) {
     nodeContainer = new Array();
     tree = null;
 
-    let visualResponse = JSON.stringify(results);
-    return visualResponse;
+    //Return results immediately!
+    return results;
+    //let visualResponse = JSON.stringify(results);
+    //return visualResponse;
 }
