@@ -1,4 +1,10 @@
-
+/* ----------- LOCAL VARIABLES -------------*/
+var nodeGeneratedId = 0;
+var nodeContainer = new Array();
+var tree = null;
+var tStart;
+var tEnd;
+/*----------- ------------------------------*/
 class Result {
 
     constructor() {
@@ -21,10 +27,6 @@ class Node {
     }
 }
 
-/*Genereate the search expression*/
-var nodeGeneratedId = 0;
-var nodeContainer = new Array();
-var tree = null;
 
 function createExpression(dictionary) {
 
@@ -213,8 +215,11 @@ function generateStartNodeChildren(startNode, dictionary) {
 function fileSearch(patterns, context) {
 
     // Create the tree before searching operation
+    tStart = Date.now();
     createExpression(patterns);
-
+    tEnd = Date.now();
+    console.log(tEnd-tStart+"MS Create EXPRESSION");
+    
     //Set the cursor index to the start node
     //Set the cursor Node to the start node
     let cursorIndex = 0;
