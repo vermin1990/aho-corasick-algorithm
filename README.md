@@ -8,83 +8,17 @@ Automaton Creation
 
 The most important idea behind this algorithm is Automaton Creation phase. From the Aho-Corasick point of view, automaton is a state-machine which is created from a set of patterns (strings). What an automoton does is indecting how different characters of these patterns are connected together. Hence, the automaton can be considered as a graph of characters.
 
-Example: Assume that the items of the following set need to be searched throughout a text file. The JSON structore depicts the graph which is created from the set items. For better underestanding, I strongly recommand to try drawing the graph using the depicted JSON structure.
+Example: Assume that the items of the following set need to be searched throughout a text file. The structore depicts the graph which is created from the set items.
 
-SET : {'a','aab','aac','bc','bd'}
+SET:
+
+{'a', 'ab', 'aab', 'aac', 'bc', 'bd'}
 
 GRAPH:
-{
-   "id":0,
-   "char":"START NODE",
-   "outputs":null,
-   "parentNodeId":null,
-   "failNodeId":0,
-   "children":[      
-      {
-         "id":1,
-         "char":"a",
-         "outputs":[
-            "a"
-         ],
-         "parentNodeId":0,
-         "failNodeId":0,
-         "children":[            
-            {
-               "id":3,
-               "char":"a",
-               "outputs":[
-                  "a"
-               ],
-               "parentNodeId":1,
-               "failNodeId":1,
-               "children":[                  
-                  {
-                     "id":6,
-                     "char":"b",
-                     "outputs":[
-                        "aab"
-                     ],
-                     "parentNodeId":3,
-                     "failNodeId":2                                         
-                  },
-                  {
-                     "id":7,
-                     "char":"c",
-                     "outputs":[
-                        "aac"
-                     ],
-                     "parentNodeId":3,
-                     "failNodeId":0,                 
-                  }
-               ]              
-            }
-         ]        
-      },
-      {
-         "id":2,
-         "char":"b",         
-         "parentNodeId":0,
-         "failNodeId":0,
-         "children":[            
-            {
-               "id":4,
-               "char":"c",
-               "outputs":[
-                  "bc"
-               ],
-               "parentNodeId":2,
-               "failNodeId":0,                                             
-            },
-            {
-               "id":5,
-               "char":"d",
-               "outputs":[
-                  "bd"
-               ],
-               "parentNodeId":2,
-               "failNodeId":0               
-            }
-         ]         
-      }
-   ]  
-}
+
+{START NODE, id:0, outputs:{},failNodeId:0} > { a, id:1, outputs:{'a'}, failNodeId:0} & {b, id:2, outputs:{}, failNodeId:0}
+{id:1} > {a, id:3, outputs:{'a'}, failNodeId:1} & {b, id:4, outputs:{'ab'}, failNodeId:2}
+{id:2} > {c, id:5, outputs:{'bc'}, failNodeId:0} & {d, id:6, outputs:{'dc'}, failNodeId:0}
+{id:3} > {b, id:7, outputs:{'aab'}, failNodeId:4} & {c, id:8, outputs:{'aac'}, failNodeId:0}
+
+There are two functions in the code which create the automaton. These functions are populateTree(startNode) and   drawFailRelations(startNode). The first one reads the mentioned set and adds appropriate nodes to the graph, whereas, the second one determines where a node goes when it is failed throughout the search process.  
