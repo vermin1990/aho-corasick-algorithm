@@ -1,293 +1,173 @@
 /* ----------- LOCAL VARIABLES -------------*/
 var nodeGeneratedId = 0;
-var nodeContainer = new Array();
-var tree = null;
-var tStart;
-var tEnd;
-/*----------- ------------------------------*/
+var nodeContainer = [];
+var dictionary;
+/*-------------- CLASSES------------------*/
 class Result {
-
     constructor() {
-        this.key="";
-        this.startIndex = new Array();
+        this.key = "";
+        this.startIndex = [];
     }
-
 }
-
 class Node {
-
     constructor(id, char, outputs, parentNodeId, failNodeId, children) {
         this.id = id;
         this.char = char;
-        this.outpts = outputs;
+        this.outputs = outputs;
         this.parentNodeId = parentNodeId;
         this.failNodeId = failNodeId;
         this.children = children;
-        this.path = "";
+        this.childrenIndexes = [];
+        this.path = '';
     }
 }
+/*--------------- FUCNTIONS--------------*/
 
-
-function createExpression(dictionary) {
-
-    let expression = null;
+function createAutomaton() {
 
     if (dictionary == null || dictionary.length === 0) {
-
+        
         console.log('The dictionary was empty!');
         return expresssion;
     }
 
     //Create the root of the tree which is called start node
-    let startNode = new Node(nodeGeneratedId, '', null, null, null, new Array());
+    let startNode = new Node(nodeGeneratedId, '', null, null, null, []);
     nodeContainer.push(startNode);
 
-    //Generate immediate children of the start node!
-    generateStartNodeChildren(startNode, dictionary);
+    //Populate the tree structor       
+    populateTree(startNode);
 
-    //start a revursive procedure in order to pouplate the tree
-    populateTree(startNode, dictionary);
-
-    //Set all fail relationships
-    makeFailRelations(startNode);
-
-    expression = JSON.stringify(startNode);
-    console.log(expression);
+    //Draw all fail relations
+    drawFailRelations(startNode);
 }
 
-function populateTree(node, dictionary) {
+function populateTree(node) {
 
-    let children = node.children;
+    let nodeQueue = [node];
+    while (nodeQueue.length !== 0) {
 
-    //TODO : It is a very complex loop!
-    for (let i = 0; i < children.length; i++) {
+        let checkList = [];
+        let removedNode = nodeQueue.shift();
+        let statement = removedNode.path + removedNode.char;
 
-        let currentParent = children[i];
-        let statement = currentParent.path + currentParent.char;
-        let checkList = new Array();
+        for (let i = 0; i < dictionary.length; i++) {
 
-        for (let j = 0; j < dictionary.length; j++) {
+            if (dictionary[i].startsWith(statement)) {
 
-            if (dictionary[j].startsWith(statement)) {
-
-                let pattern = dictionary[j];
-                let nextChar = pattern[statement.length];
-
-                if (nextChar === undefined || checkList[nextChar.charCodeAt(0)] === true) {
-                    continue;
-                }
-
-                checkList[nextChar.charCodeAt(0)] = true;
-                nodeGeneratedId += 1;
-
-                let newChild = new Node(nodeGeneratedId, nextChar, new Array(), currentParent.id, null, new Array());
-                newChild.path = currentParent.path + currentParent.char;
-
-                for (let z = 0; z < dictionary.length; z++) {
-                    if (dictionary[z] === (newChild.path + newChild.char)) {
-                        newChild.outpts.push(newChild.path + newChild.char);
-                    }
-                }
-
-                currentParent.children.push(newChild);
-                nodeContainer[newChild.id] = newChild;
-            }
-
-        }
-        populateTree(currentParent, dictionary);
-    }
-}
-
-function makeFailRelations(node) {
-
-    let queue = new Array();
-
-    for (let i = 0; i < node.children.length; i++) {
-        queue.push(node.children[i]);
-    }
-
-    while (queue.length != 0) {
-
-        let selectedNode = queue.shift();
-
-        if ((nodeContainer[selectedNode.parentNodeId]).char === "") {
-
-            selectedNode.failNodeId = selectedNode.parentNodeId;
-
-            for (let i = 0; i < selectedNode.children.length; i++) {
-                queue.push(selectedNode.children[i]);
-            }
-        }
-        else {
-
-            //TODO: Bad Practice!
-            let isFirstItarate = true;
-            let failNode = 0;
-            while (failNode != null) {
-
-                //TODO: Bad Practice
-                if (isFirstItarate === true) {
-
-                    failNode = nodeContainer[(nodeContainer[selectedNode.parentNodeId]).parentNodeId];
-                    isFirstItarate = false;
+                let newChar = '';
+                if (removedNode.id === 0) {
+                    newChar = (dictionary[i])[0];
                 }
                 else {
-                    failNode = nodeContainer[failNode.parentNodeId];
-
+                    newChar = (dictionary[i])[removedNode.path.length + 1];
                 }
 
-                if (failNode != null) {
+                if (newChar === undefined || checkList[newChar.charCodeAt(0)] === true)
+                    continue;
 
-                    for (let i = 0; i < failNode.children.length; i++) {
+                checkList[newChar.charCodeAt(0)] = true;
+                nodeGeneratedId += 1;
+                let child = new Node(nodeGeneratedId, newChar, [], removedNode.id, null, []);
+                child.path = statement;
 
-                        if (failNode.children[i].char === selectedNode.char) {
-
-                            selectedNode.failNodeId = failNode.children[i].id;
-
-                            if (failNode.children[i].outpts.length != 0) {
-
-                                for (let j = 0; j < failNode.children[i].outpts.length; j++) {
-                                    selectedNode.outpts.push(failNode.children[i].outpts[j]);
-                                }
-                            }
-
-                            for (let j = 0; j < selectedNode.children.length; j++) {
-                                queue.push(selectedNode.children[j]);
-                            }
-
-                            failNode = null;
-                            break;
-                        }
-                    }
+                if (dictionary.includes(child.path + child.char) === true) {
+                    child.outputs.push(child.path + child.char);
                 }
 
-                //Inner while-loop exit point!
-                if (failNode === undefined || failNode == null) {
+                removedNode.children[newChar.charCodeAt(0)] = child;
+                removedNode.childrenIndexes.push(newChar.charCodeAt(0));
+                nodeQueue.push(child);
+                nodeContainer[child.id] = child;
+            }
+        }
+    }
+}
 
-                    //When no fail node is found for the selected node, just redirect it to the start node!
-                    if (selectedNode.failNodeId == null) {
+function drawFailRelations(node) {
+    //Initiate the queue of nodes
+    let nodeQueue = [];
 
-                        selectedNode.failNodeId = nodeContainer[0].id;
+    for (let i = 0; i < node.childrenIndexes.length; i++) {
+        nodeQueue.push(node.children[node.childrenIndexes[i]]);
+    }
 
-                        for (let i = 0; i < selectedNode.children.length; i++) {
-                            queue.push(selectedNode.children[i]);
-                        }
+    while (nodeQueue.length !== 0) {
+
+        let removedNode = nodeQueue.shift();
+
+        //Nodes which are immediate children of the start node 
+        //has the start node as their fail node
+        if ((nodeContainer[removedNode.parentNodeId]).char === '') {
+
+            removedNode.failNodeId = removedNode.parentNodeId;
+        }
+
+        else {
+
+            //Initiate the first ancestor node
+            ancestor = nodeContainer[(nodeContainer[removedNode.parentNodeId]).parentNodeId];
+            while (ancestor !== undefined) {
+
+                //This ancestor does not have any correspondent children
+                //So, replace the current ancestor with an older one                
+                if (ancestor.children[removedNode.char.charCodeAt(0)] === undefined) {
+                    ancestor = nodeContainer[ancestor.parentNodeId];
+                }
+                //This ancestor has a child which corresponds with the removed node
+                //So, fill the removed node failId with the found child id
+                else {
+
+                    removedNode.failNodeId = (ancestor.children[removedNode.char.charCodeAt(0)]).id;
+
+                    //It means that removed node also contains the outputs of its failNode
+                    for (let i = 0; i < (ancestor.children[removedNode.char.charCodeAt(0)]).outputs.length; i++) {
+                        removedNode.outputs.push((ancestor.children[removedNode.char.charCodeAt(0)]).outputs[i]);
                     }
-
                     break;
                 }
             }
-        }
-    }
-}
 
-function generateStartNodeChildren(startNode, dictionary) {
-
-    let checkList = new Array();
-    for (let i = 0; i < dictionary.length; i++) {
-
-        let pattern = dictionary[i];
-        let char = pattern[0]
-        let charCode = pattern.charCodeAt(0);
-
-        if (checkList[charCode] === undefined) {
-
-            nodeGeneratedId += 1;
-
-            let child = new Node(nodeGeneratedId, char, new Array(), startNode.id, startNode.id, new Array());
-            child.path = startNode.path + startNode.char;
-
-            // TODO : Can we improve the BigO?!
-            for (let j = 0; j < dictionary.length; j++) {
-
-                if (char == dictionary[j]) {
-                    child.outpts.push(char);
-                }
+            //If no fail node has been found for the removed node,
+            //Set the start node as its fail node
+            if (removedNode.failNodeId == null) {
+                removedNode.failNodeId = 0;
             }
-            startNode.children.push(child);
-            nodeContainer[child.id] = child;
-            checkList[charCode] = true;
+        }
+
+        for (let i = 0; i < removedNode.childrenIndexes.length; i++) {
+            nodeQueue.push(removedNode.children[removedNode.childrenIndexes[i]]);
         }
     }
 }
 
-
-function fileSearch(patterns, context) {
-
-    // Create the tree before searching operation
-    tStart = Date.now();
-    createExpression(patterns);
-    tEnd = Date.now();
-    console.log(tEnd-tStart+"MS Create EXPRESSION");
-    
-    //Set the cursor index to the start node
-    //Set the cursor Node to the start node
+function searchContext(startNode, context) {
     let cursorIndex = 0;
-    let cursorNode = nodeContainer[0];
-    let results = new Array();
-    let hasFound;
+    let cursorNode = startNode;
+    let results = [];    
 
     while (cursorIndex < context.length) {
 
-        hasFound = false;
-        let indexedChar = context[cursorIndex];
-
+        let currentCharCode = (context[cursorIndex]).charCodeAt(0);
         while (true) {
 
-            for (let i = 0; i < cursorNode.children.length; i++) {
+            if (cursorNode.children[currentCharCode] !== undefined) {
 
-                if (indexedChar === undefined)
-                    break;
-
-                if (cursorNode.children[i].char === indexedChar || cursorNode.children[i].char === indexedChar.toLowerCase()) {
-
-                    if (cursorNode.children[i].outpts.length != 0) {
-
-                        for (let j = 0; j < cursorNode.children[i].outpts.length; j++) {
-
-                            let needsNewNode = true;
-
-                            for(let z = 0 ; z<results.length;z++){
-                                if(results[z].key === cursorNode.children[i].outpts[j]){
-
-                                    results[z].startIndex.push(cursorIndex - cursorNode.children[i].outpts[j].length+1);
-                                    needsNewNode = false;
-                                    break;
-                                }
-                            }
-
-                            if(needsNewNode===true){
-                             let result = new Result();
-                             result.key = cursorNode.children[i].outpts[j]
-                             result.startIndex.push(cursorIndex - cursorNode.children[i].outpts[j].length + 1);
-                             results.push(result);
-                            }
-
-                        }
-                        cursorNode = nodeContainer[cursorNode.children[i].id];
-                        hasFound = true;
-                        break;
-
-                    }
-                    // When cursor node's i children has no outputs, change the cursour node and move the cursor index to
-                    // The nex char
-                    cursorNode = cursorNode.children[i];
-                    cursorIndex += 1;
-                    indexedChar = context[cursorIndex];
-                    i = -1;
+                for (let i = 0; i < cursorNode.children[currentCharCode].outputs.length; i++) {
+                    let result = new Result();
+                    result.key = cursorNode.children[currentCharCode].outputs[i];
+                    result.startIndex.push(cursorIndex - (cursorNode.children[currentCharCode].outputs[i]).length + 1);
+                    results.push(result);
                 }
-            }
 
-            if (hasFound === true) {
-                cursorIndex += 1;
+                cursorNode = cursorNode.children[currentCharCode];
+                cursorIndex+=1;
                 break;
             }
             else {
 
                 cursorNode = nodeContainer[cursorNode.failNodeId];
-
                 if (cursorNode == null || cursorNode === undefined) {
-
                     cursorNode = nodeContainer[0];
                     cursorIndex += 1;
                     break;
@@ -295,13 +175,17 @@ function fileSearch(patterns, context) {
             }
         }
     }
-
+    //Reset all golbal variables for consecutive search operations    
+    nodeContainer = [];
     nodeGeneratedId = 0;
-    nodeContainer = new Array();
-    tree = null;
-
-    //Return results immediately!
+    dictionary = null;
     return results;
-    //let visualResponse = JSON.stringify(results);
-    //return visualResponse;
+}
+
+function fileSearch(patterns, context) {
+
+    dictionary = patterns;
+    //Create the aho-corasick automaton    
+    createAutomaton();
+    return searchContext(nodeContainer[0], context);    
 }
