@@ -2,7 +2,7 @@
 var nodeGeneratedId = 0;
 var nodeContainer = [];
 var dictionary;
-/*-------------- CLASSES------------------*/
+/*--------------CLASSES------------------*/
 class Result {
     constructor() {
         this.key = "";
@@ -21,14 +21,14 @@ class Node {
         this.path = '';
     }
 }
-/*--------------- FUCNTIONS--------------*/
+/*--------------- FUNCTIONS--------------*/
 
 function createAutomaton() {
 
     if (dictionary == null || dictionary.length === 0) {
         
         console.log('The dictionary was empty!');
-        return expresssion;
+        return;
     }
 
     //Create the root of the tree which is called start node
@@ -142,6 +142,10 @@ function drawFailRelations(node) {
 }
 
 function searchContext(startNode, context) {
+
+    if(startNode===undefined)
+        return;
+
     let cursorIndex = 0;
     let cursorNode = startNode;
     let results = [];    

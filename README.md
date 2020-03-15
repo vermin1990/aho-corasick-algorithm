@@ -19,7 +19,7 @@ SET:
 
 GRAPH:
 
-{START NODE, id:0, outputs:{},failNodeId:0} > { a, id:1, outputs:{'a'}, failNodeId:0} & {b, id:2, outputs:{}, failNodeId:0}
+{START NODE, id:0, outputs:{}, failNodeId:0} > { a, id:1, outputs:{'a'}, failNodeId:0} & {b, id:2, outputs:{}, failNodeId:0}
 
 {id:1} > {a, id:3, outputs:{'a'}, failNodeId:1} & {b, id:4, outputs:{'ab'}, failNodeId:2}
 
@@ -32,3 +32,14 @@ There are two functions in the code which create the automaton. These functions 
 Search Process
 
 Simply speaking, this function tries to match the current read character of the text with one of the current node's children. So, if it fails, the current node is shifted upward.  
+
+Example: 
+
+var result = fileSearch(['mahmoud','hossein'],'Last night, mahmoud and hossein were playing nice!');
+console.log(result);
+
+Result: 
+
+{key: mahmoud, startIndex: 12}
+
+{key: hossein, startIndex: 24}
